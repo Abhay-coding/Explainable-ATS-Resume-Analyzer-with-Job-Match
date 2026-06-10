@@ -77,46 +77,46 @@ def with_fallback(
 
 def get_default_grammar_results() -> Dict:
     return {
-        'total_errors':         0,
-        'critical_errors':      [],
-        'moderate_errors':      [],
-        'minor_errors':         [],
-        'grammar_score':        100,
-        'penalty_applied':      0,
-        'error_free_percentage': 100,
-        '_component_status':    'unavailable',
+        'total_errors':0,
+        'critical_errors':[],
+        'moderate_errors':[],
+        'minor_errors':[],
+        'grammar_score':100,
+        'penalty_applied':0,
+        'error_free_percentage':100,
+        '_component_status':'unavailable',
         '_note': 'Grammar checking unavailable.'
     }
 
 def get_default_location_results() -> Dict:
     return {
-        'location_found':     False,
+        'location_found':False,
         'detected_locations': [],
-        'privacy_risk':       'unknown',
-        'recommendations':    ['Location detection unavailable.'],
-        'penalty_applied':    0,
-        '_component_status':  'unavailable',
+        'privacy_risk':'unknown',
+        'recommendations':['Location detection unavailable.'],
+        'penalty_applied': 0,
+        '_component_status':'unavailable',
         '_note': 'Location detection unavailable.'
     }
 
 def get_default_skill_validation_results() -> Dict:
     return {
-        'validated_skills':     [],
-        'unvalidated_skills':   [],
+        'validated_skills':[],
+        'unvalidated_skills':[],
         'validation_percentage': 0.0,
         'skill_project_mapping': {},
-        'validation_score':     0.0,
-        '_component_status':    'unavailable',
+        'validation_score':0.0,
+        '_component_status':'unavailable',
         '_note': 'Skill validation unavailable.'
     }
 
 def get_default_jd_comparison_results() -> Dict:
     return {
         'semantic_similarity': 0.0,
-        'matched_keywords':    [],
-        'missing_keywords':    [],
-        'skills_gap':          [],
-        'match_percentage':    0.0,
-        '_component_status':   'unavailable',
+        'matched_keywords': [],
+        'missing_keywords':[],
+        'skills_gap':[],
+        'match_percentage':0.0,
+        '_component_status':'unavailable',
         '_note': 'JD comparison unavailable.'
     }
