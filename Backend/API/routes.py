@@ -174,11 +174,35 @@ async def health_check(request: Request):
 async def get_history(user_id: str = Depends(get_current_user)):
     """Return the signed-in user's past analyses (identity comes from the JWT)."""
     from backend.database.supabase_db import get_user_history
+    from backend.core.config import SUPABASE_URL, SUPABASE_KEY
+    
+    # Check if Supabase is configured
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        logger.warning('Supabase not configured - returning empty history')
+        return []
+    
     try:
-        return await get_user_history(user_id)
+        history = await get_user_history(user_id)
+        
+        # Ensure we return a list of dicts
+        if not isinstance(history, list):
+            logger.error(f'Unexpected history type: {type(history)}')
+            return []
+        
+        # Validate each entry is a dict
+        validated = []
+        for i, entry in enumerate(history):
+            if isinstance(entry, dict):
+                validated.append(entry)
+            else:
+                logger.warning(f'Skipping non-dict entry {i}: {type(entry)} = {entry}')
+        
+        logger.info(f'Returning {len(validated)} valid history entries for user {user_id}')
+        return validated
+        
     except Exception as exc:
-        logger.error(f'History fetch failed: {exc}')
-        raise HTTPException(status_code=500, detail=f'Could not load history: {exc}')
+        logger.error(f'History fetch failed: {exc}', exc_info=True)
+        return []
 
 
 @router.delete('/history/{analysis_id}')

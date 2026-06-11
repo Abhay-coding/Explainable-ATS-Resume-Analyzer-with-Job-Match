@@ -58,6 +58,7 @@ async def save_analysis(user_id: str, filename: str, analysis_result: Dict) -> O
 async def get_user_history(user_id: str) -> List[Dict]:
     headers = _get_headers()
     if not headers:
+        logger.warning('Supabase headers not configured')
         return []
 
     url = f"{SUPABASE_URL.rstrip('/')}/rest/v1/analyses"
@@ -75,9 +76,30 @@ async def get_user_history(user_id: str) -> List[Dict]:
             response.raise_for_status()
             docs = response.json()
             
+            if not isinstance(docs, list):
+                logger.error(f'Expected list from Supabase, got {type(docs)}')
+                return []
+            
+            logger.info(f'Fetched {len(docs)} documents from Supabase')
+            
             results = []
-            for doc in docs:
-                results.append({
+            for i, doc in enumerate(docs):
+                if not isinstance(doc, dict):
+                    logger.warning(f'Document {i} is not a dict: {type(doc)}')
+                    continue
+                    
+                # Handle analysis_result - it might be stored as JSON string
+                analysis_result = doc.get("analysis_result", {})
+                if isinstance(analysis_result, str):
+                    try:
+                        analysis_result = json.loads(analysis_result)
+                    except Exception as e:
+                        logger.warning(f'Could not parse analysis_result as JSON: {e}')
+                        analysis_result = {}
+                elif not isinstance(analysis_result, dict):
+                    analysis_result = {}
+                
+                entry = {
                     "id": str(doc.get("id")),
                     "filename": doc.get("filename", "resume"),
                     "resume_name": doc.get("filename", "resume"),
@@ -87,11 +109,14 @@ async def get_user_history(user_id: str) -> List[Dict]:
                     "missing_keywords": doc.get("missing_keywords", []),
                     "date": doc.get("created_at", ""),
                     "created_at": doc.get("created_at", ""),
-                    "analysis_result": doc.get("analysis_result", {}),
-                })
+                    "analysis_result": analysis_result,
+                }
+                results.append(entry)
+            
+            logger.info(f'Built {len(results)} result entries')
             return results
     except Exception as exc:
-        logger.error(f"Failed to fetch history from Supabase: {exc}")
+        logger.error(f"Failed to fetch history from Supabase: {exc}", exc_info=True)
         return []
 
 async def delete_analysis(analysis_id: str, user_id: str) -> bool:

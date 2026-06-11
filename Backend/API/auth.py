@@ -40,7 +40,8 @@ def _verify_token(token: str) -> dict:
             token,
             signing_key,
             algorithms=_ASYMMETRIC_ALGS,
-            audience='authenticated',
+            audience=None,
+            options={"verify_aud": False},
         )
 
     if alg == 'HS256':
@@ -52,7 +53,8 @@ def _verify_token(token: str) -> dict:
             token,
             SUPABASE_JWT_SECRET,
             algorithms=['HS256'],
-            audience='authenticated',
+            audience=None,
+            options={"verify_aud": False},
         )
 
     raise jwt.InvalidTokenError(f'Unsupported JWT algorithm: {alg}')
