@@ -3,7 +3,11 @@ from pathlib import Path
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    # Load from both root and backend directories
+    root_dir = Path(__file__).parent.parent.parent  # project root
+    backend_dir = Path(__file__).parent.parent  # backend dir
+    load_dotenv(root_dir / '.env')
+    load_dotenv(backend_dir / '.env')
 except ImportError:
     pass
 
