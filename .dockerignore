@@ -1,0 +1,14 @@
+__pycache__
+.git
+.gitignore
+.env
+.venv
+*.pyc
+*.pyo
+*.egg-info
+.pytest_cache
+.DS_Store
+node_modules
+.streamlit/secrets.toml
+logs/
+*.log

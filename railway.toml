@@ -1,0 +1,27 @@
+# Railway deployment configuration
+[build]
+# Ensure libmagic and system dependencies are installed
+builder = "dockerfile"
+
+[start]
+# Backend: optimized for Railway memory constraints
+cmd = "python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 1"
+
+[env]
+# Memory optimization
+PYTHONUNBUFFERED = "1"
+PYTORCH_CUDA_ALLOC_CONF = "max_split_size_mb=512"
+
+# Model optimization for Railway (limited RAM)
+# Use smaller models that still perform well
+SENTENCE_TRANSFORMER_MODEL = "all-MiniLM-L6-v2"  # 80MB instead of larger models
+SPACY_MODEL_PRIMARY = "en_core_web_sm"           # Smaller spacy model for Railway
+
+# Disable unused features on Railway
+GROQ_API_KEY = "${GROQ_API_KEY}"  # From Railway secrets
+
+# Supabase
+SUPABASE_URL = "${SUPABASE_URL}"
+SUPABASE_KEY = "${SUPABASE_KEY}"
+SUPABASE_ANON_KEY = "${SUPABASE_ANON_KEY}"
+SUPABASE_JWT_SECRET = "${SUPABASE_JWT_SECRET}"
